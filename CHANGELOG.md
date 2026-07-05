@@ -1,3 +1,7 @@
+## 1.0.1
+
+* added Demo video and enhanced documentations
+
 ## 1.0.0
 
 * Initial stable release.
