@@ -7,7 +7,7 @@ A lightweight, production-ready Flutter package for interactive onboarding walkt
 
 ## Demo
 
-<video src="showcase.mov" controls width="100%"></video>
+![Flow Showcase walkthrough demo](https://raw.githubusercontent.com/hasanm08/flow_showcase/main/showcase.gif)
 
 ## Features
 

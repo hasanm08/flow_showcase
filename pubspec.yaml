@@ -2,7 +2,7 @@ name: flow_showcase
 description: >-
   A lightweight, high-performance Flutter package for interactive onboarding
   walkthroughs with spotlight overlays, step indicators, and declarative targets.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/hasanm08/flow_showcase
 repository: https://github.com/hasanm08/flow_showcase
 issue_tracker: https://github.com/hasanm08/flow_showcase/issues
@@ -19,5 +19,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+
+screenshots:
+  - description: Interactive onboarding walkthrough with spotlight overlay and tooltip.
+    path: doc/screenshots/demo.png
 
 flutter:

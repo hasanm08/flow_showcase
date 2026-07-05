@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Fix README demo visibility on GitHub and pub.dev (animated GIF + screenshot).
+
 ## 1.0.1
 
 * added Demo video and enhanced documentations
