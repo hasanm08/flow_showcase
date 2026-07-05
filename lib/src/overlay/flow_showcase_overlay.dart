@@ -271,7 +271,9 @@ class _TooltipCard extends StatelessWidget {
         child: Container(
           margin: isMobile ? style.tooltipMargin : null,
           padding: style.tooltipPadding,
-          width: isMobile ? maxWidth - style.tooltipMargin.horizontal : style.tooltipWidth,
+          width: isMobile
+              ? maxWidth - style.tooltipMargin.horizontal
+              : style.tooltipWidth,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(style.tooltipBorderRadius),
             color: theme.colorScheme.surface,

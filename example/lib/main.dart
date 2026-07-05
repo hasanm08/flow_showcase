@@ -104,7 +104,8 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+        onDestinationSelected: (index) =>
+            setState(() => _selectedIndex = index),
         destinations: const [
           _ShowcaseDestination(
             id: 'nav_home',
@@ -126,8 +127,7 @@ class _DashboardPageState extends State<DashboardPage> {
           _ShowcaseDestination(
             id: 'nav_notifications',
             title: 'Stay in the Loop',
-            content:
-                'Mentions, replies, and system alerts appear in this tab.',
+            content: 'Mentions, replies, and system alerts appear in this tab.',
             icon: Icon(Icons.notifications_outlined),
             selectedIcon: Icon(Icons.notifications),
             label: 'Alerts',
@@ -175,7 +175,8 @@ class _HomeTab extends StatelessWidget {
             child: ListTile(
               leading: CircleAvatar(child: Text('${index + 1}')),
               title: Text('Sample post #${index + 1}'),
-              subtitle: const Text('Scrollable content stays underneath the overlay.'),
+              subtitle: const Text(
+                  'Scrollable content stays underneath the overlay.'),
             ),
           ),
         ),
