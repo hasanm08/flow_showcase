@@ -5,6 +5,10 @@
 
 A lightweight, production-ready Flutter package for interactive onboarding walkthroughs. Highlight any widget with a blurred spotlight overlay, adaptive tooltip positioning, and multi-step navigation — with zero third-party runtime dependencies.
 
+## Demo
+
+<video src="showcase.mov" controls width="100%"></video>
+
 ## Features
 
 - **Declarative targets** — wrap widgets once with `FlowShowcaseTarget` and start tours by id
