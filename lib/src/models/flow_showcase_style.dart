@@ -14,8 +14,7 @@ class FlowShowcaseStyle {
     this.spotlightExpand = 0,
     this.spotlightInsets = EdgeInsets.zero,
     double? spotlightGap,
-    @Deprecated('Use spotlightGap instead.')
-    double? spotlightPadding,
+    @Deprecated('Use spotlightGap instead.') double? spotlightPadding,
     this.tooltipBackgroundColor,
     this.tooltipBorderRadius = 8,
     this.tooltipWidth = 400,
@@ -272,8 +271,7 @@ class FlowShowcaseStyle {
       tooltipBoxShadow: tooltipBoxShadow ?? this.tooltipBoxShadow,
       tooltipSectionSpacing:
           tooltipSectionSpacing ?? this.tooltipSectionSpacing,
-      tooltipPositionInset:
-          tooltipPositionInset ?? this.tooltipPositionInset,
+      tooltipPositionInset: tooltipPositionInset ?? this.tooltipPositionInset,
       showTooltipArrow: showTooltipArrow ?? this.showTooltipArrow,
       triangleWidth: triangleWidth ?? this.triangleWidth,
       triangleHeight: triangleHeight ?? this.triangleHeight,
@@ -304,10 +302,9 @@ class FlowShowcaseStyle {
       stepIndicatorInactiveColor:
           stepIndicatorInactiveColor ?? this.stepIndicatorInactiveColor,
       stepIndicatorDotSize: stepIndicatorDotSize ?? this.stepIndicatorDotSize,
-      stepIndicatorSpacing:
-          stepIndicatorSpacing ?? this.stepIndicatorSpacing,
-      stepIndicatorAnimationDuration: stepIndicatorAnimationDuration ??
-          this.stepIndicatorAnimationDuration,
+      stepIndicatorSpacing: stepIndicatorSpacing ?? this.stepIndicatorSpacing,
+      stepIndicatorAnimationDuration:
+          stepIndicatorAnimationDuration ?? this.stepIndicatorAnimationDuration,
       nextButtonStyle: nextButtonStyle ?? this.nextButtonStyle,
       skipButtonStyle: skipButtonStyle ?? this.skipButtonStyle,
     );

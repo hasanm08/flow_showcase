@@ -75,11 +75,10 @@ class _FlowShowcaseOverlayState extends State<FlowShowcaseOverlay>
     final size = renderBox.size;
     final style = widget.style;
     final step = widget.step;
-    final spotlightRect =
-        step.resolveSpotlightRect(offset & size, style);
+    final spotlightRect = step.resolveSpotlightRect(offset & size, style);
     final spotlightGap = step.resolveSpotlightGap(style);
-    final tooltipColor = style.tooltipBackgroundColor ??
-        Theme.of(context).colorScheme.surface;
+    final tooltipColor =
+        style.tooltipBackgroundColor ?? Theme.of(context).colorScheme.surface;
     final arrowColor = style.tooltipArrowColor ?? tooltipColor;
 
     return Material(
@@ -89,9 +88,8 @@ class _FlowShowcaseOverlayState extends State<FlowShowcaseOverlay>
           final maxWidth = constraints.maxWidth;
           final maxHeight = constraints.maxHeight;
           final isMobile = maxWidth < style.mobileBreakpoint;
-          final triangleLeft = offset.dx +
-              (size.width / 2) -
-              (style.triangleWidth / 2);
+          final triangleLeft =
+              offset.dx + (size.width / 2) - (style.triangleWidth / 2);
           final pointerUp = offset.dy < maxHeight / 2;
 
           return Stack(
@@ -284,25 +282,18 @@ class _TooltipCard extends StatelessWidget {
     final showIndicator = stepCount > 1 && style.showStepIndicator;
     final showSkip = stepCount > 1 && style.showSkipButton;
     final headerIcon = step.icon ?? style.defaultIcon;
-    final arrowHeight =
-        style.showTooltipArrow ? style.triangleHeight : 0.0;
+    final arrowHeight = style.showTooltipArrow ? style.triangleHeight : 0.0;
     final sectionSpacing = style.tooltipSectionSpacing;
-    final indicatorActiveColor =
-        style.stepIndicatorActiveColor ?? primary;
-    final indicatorInactiveColor = style.stepIndicatorInactiveColor ??
-        primary.withValues(alpha: 0.3);
-    final headerForeground =
-        style.headerIconForegroundColor ?? primary;
-    final headerBackground = style.headerIconBackgroundColor ??
-        primary.withValues(alpha: 0.15);
+    final indicatorActiveColor = style.stepIndicatorActiveColor ?? primary;
+    final indicatorInactiveColor =
+        style.stepIndicatorInactiveColor ?? primary.withValues(alpha: 0.3);
+    final headerForeground = style.headerIconForegroundColor ?? primary;
+    final headerBackground =
+        style.headerIconBackgroundColor ?? primary.withValues(alpha: 0.15);
 
     return Positioned(
-      top: pointerUp
-          ? offset.dy + size.height + arrowHeight + gap
-          : null,
-      bottom: pointerUp
-          ? null
-          : maxHeight - offset.dy + arrowHeight + gap,
+      top: pointerUp ? offset.dy + size.height + arrowHeight + gap : null,
+      bottom: pointerUp ? null : maxHeight - offset.dy + arrowHeight + gap,
       left: _left(maxWidth, isMobile),
       right: _right(maxWidth, isMobile),
       child: FadeTransition(
@@ -314,8 +305,7 @@ class _TooltipCard extends StatelessWidget {
               ? maxWidth - style.tooltipMargin.horizontal
               : style.tooltipWidth,
           decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.circular(style.tooltipBorderRadius),
+            borderRadius: BorderRadius.circular(style.tooltipBorderRadius),
             color: tooltipColor,
             boxShadow: style.resolveTooltipBoxShadow(),
           ),
@@ -372,8 +362,7 @@ class _TooltipCard extends StatelessWidget {
                         inactiveColor: indicatorInactiveColor,
                         dotSize: style.stepIndicatorDotSize,
                         spacing: style.stepIndicatorSpacing,
-                        animationDuration:
-                            style.stepIndicatorAnimationDuration,
+                        animationDuration: style.stepIndicatorAnimationDuration,
                       ),
                     ),
                   ElevatedButton(
