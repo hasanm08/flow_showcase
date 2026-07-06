@@ -11,11 +11,11 @@ import '../widgets/flow_showcase_target.dart';
 /// registered via [FlowShowcaseTarget].
 class FlowShowcaseController {
   FlowShowcaseController({
-    required this.steps,
+    required List<FlowShowcaseStep> steps,
     this.onComplete,
     this.style = const FlowShowcaseStyle(),
     this.useRootOverlay = false,
-  });
+  }) : steps = steps.where((step) => step.enabled).toList();
 
   final List<FlowShowcaseStep> steps;
   final VoidCallback? onComplete;

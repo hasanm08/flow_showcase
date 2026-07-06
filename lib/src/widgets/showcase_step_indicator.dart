@@ -9,6 +9,9 @@ class ShowcaseStepIndicator extends StatelessWidget {
     required this.onStepSelected,
     required this.activeColor,
     required this.inactiveColor,
+    this.dotSize = 12,
+    this.spacing = 8,
+    this.animationDuration = const Duration(milliseconds: 200),
   });
 
   final int count;
@@ -16,8 +19,9 @@ class ShowcaseStepIndicator extends StatelessWidget {
   final ValueChanged<int> onStepSelected;
   final Color activeColor;
   final Color inactiveColor;
-
-  static const double _dotSize = 12;
+  final double dotSize;
+  final double spacing;
+  final Duration animationDuration;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,7 @@ class ShowcaseStepIndicator extends StatelessWidget {
       children: List.generate(count, (index) {
         final isActive = index == activeIndex;
         return Padding(
-          padding: EdgeInsets.only(right: index == count - 1 ? 0 : 8),
+          padding: EdgeInsets.only(right: index == count - 1 ? 0 : spacing),
           child: Semantics(
             button: true,
             selected: isActive,
@@ -35,9 +39,9 @@ class ShowcaseStepIndicator extends StatelessWidget {
               onTap: () => onStepSelected(index),
               behavior: HitTestBehavior.opaque,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: _dotSize,
-                height: _dotSize,
+                duration: animationDuration,
+                width: dotSize,
+                height: dotSize,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isActive ? activeColor : Colors.transparent,

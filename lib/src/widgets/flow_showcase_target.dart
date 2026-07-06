@@ -22,6 +22,13 @@ class FlowShowcaseTarget extends StatefulWidget {
     required this.child,
     required this.content,
     this.title,
+    this.icon,
+    this.enabled = true,
+    this.overlayColor,
+    this.spotlightBorderRadius,
+    this.spotlightExpand,
+    this.spotlightInsets,
+    this.spotlightGap,
   });
 
   /// Unique identifier used when starting a showcase sequence.
@@ -35,6 +42,27 @@ class FlowShowcaseTarget extends StatefulWidget {
 
   /// Tooltip body text.
   final String content;
+
+  /// Optional icon shown in the tooltip header for this step.
+  final Widget? icon;
+
+  /// When `false`, this target is skipped when resolving [getSteps].
+  final bool enabled;
+
+  /// Per-step backdrop tint override.
+  final Color? overlayColor;
+
+  /// Per-step spotlight corner radius override.
+  final double? spotlightBorderRadius;
+
+  /// Per-step uniform spotlight expansion override.
+  final double? spotlightExpand;
+
+  /// Per-step asymmetric spotlight expansion override.
+  final EdgeInsets? spotlightInsets;
+
+  /// Per-step gap between target and tooltip arrow override.
+  final double? spotlightGap;
 
   static final Map<String, FlowShowcaseRegistration> _registry = {};
 
@@ -52,11 +80,21 @@ class FlowShowcaseTarget extends StatefulWidget {
     for (final id in ids) {
       final registration = _registry[id];
       if (registration != null) {
+        if (!registration.enabled) {
+          continue;
+        }
         steps.add(
           FlowShowcaseStep(
             key: registration.key,
             title: registration.title,
             content: registration.content,
+            icon: registration.icon,
+            enabled: registration.enabled,
+            overlayColor: registration.overlayColor,
+            spotlightBorderRadius: registration.spotlightBorderRadius,
+            spotlightExpand: registration.spotlightExpand,
+            spotlightInsets: registration.spotlightInsets,
+            spotlightGap: registration.spotlightGap,
           ),
         );
       } else {
@@ -91,7 +129,14 @@ class _FlowShowcaseTargetState extends State<FlowShowcaseTarget> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.id != widget.id ||
         oldWidget.title != widget.title ||
-        oldWidget.content != widget.content) {
+        oldWidget.content != widget.content ||
+        oldWidget.icon != widget.icon ||
+        oldWidget.enabled != widget.enabled ||
+        oldWidget.overlayColor != widget.overlayColor ||
+        oldWidget.spotlightBorderRadius != widget.spotlightBorderRadius ||
+        oldWidget.spotlightExpand != widget.spotlightExpand ||
+        oldWidget.spotlightInsets != widget.spotlightInsets ||
+        oldWidget.spotlightGap != widget.spotlightGap) {
       FlowShowcaseTarget._registry.remove(oldWidget.id);
       _register();
     }
@@ -102,6 +147,13 @@ class _FlowShowcaseTargetState extends State<FlowShowcaseTarget> {
       key: _targetKey,
       title: widget.title,
       content: widget.content,
+      icon: widget.icon,
+      enabled: widget.enabled,
+      overlayColor: widget.overlayColor,
+      spotlightBorderRadius: widget.spotlightBorderRadius,
+      spotlightExpand: widget.spotlightExpand,
+      spotlightInsets: widget.spotlightInsets,
+      spotlightGap: widget.spotlightGap,
     );
   }
 

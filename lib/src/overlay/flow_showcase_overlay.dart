@@ -48,7 +48,7 @@ class _FlowShowcaseOverlayState extends State<FlowShowcaseOverlay>
     );
     _fadeAnimation = CurvedAnimation(
       parent: _fadeController,
-      curve: Curves.easeOut,
+      curve: widget.style.fadeCurve,
     );
     _fadeController.forward();
   }
@@ -74,6 +74,13 @@ class _FlowShowcaseOverlayState extends State<FlowShowcaseOverlay>
     final offset = renderBox.localToGlobal(Offset.zero);
     final size = renderBox.size;
     final style = widget.style;
+    final step = widget.step;
+    final spotlightRect =
+        step.resolveSpotlightRect(offset & size, style);
+    final spotlightGap = step.resolveSpotlightGap(style);
+    final tooltipColor = style.tooltipBackgroundColor ??
+        Theme.of(context).colorScheme.surface;
+    final arrowColor = style.tooltipArrowColor ?? tooltipColor;
 
     return Material(
       type: MaterialType.transparency,
@@ -82,35 +89,38 @@ class _FlowShowcaseOverlayState extends State<FlowShowcaseOverlay>
           final maxWidth = constraints.maxWidth;
           final maxHeight = constraints.maxHeight;
           final isMobile = maxWidth < style.mobileBreakpoint;
-          final triangleLeft =
-              offset.dx + (size.width / 2) - (style.triangleWidth / 2);
+          final triangleLeft = offset.dx +
+              (size.width / 2) -
+              (style.triangleWidth / 2);
           final pointerUp = offset.dy < maxHeight / 2;
-          final arrowColor = Theme.of(context).colorScheme.surface;
 
           return Stack(
             children: [
               _BackdropLayer(
                 fadeAnimation: _fadeAnimation,
                 style: style,
-                spotlightRect: offset & size,
-                onTap: widget.onNext,
+                step: step,
+                spotlightRect: spotlightRect,
+                onTap: style.dismissOnBackdropTap ? widget.onNext : null,
                 maxWidth: maxWidth,
                 maxHeight: maxHeight,
               ),
-              _TooltipPointer(
-                fadeAnimation: _fadeAnimation,
-                style: style,
-                triangleLeft: triangleLeft,
-                offset: offset,
-                size: size,
-                maxHeight: maxHeight,
-                pointerUp: pointerUp,
-                color: arrowColor,
-              ),
+              if (style.showTooltipArrow)
+                _TooltipPointer(
+                  fadeAnimation: _fadeAnimation,
+                  style: style,
+                  triangleLeft: triangleLeft,
+                  offset: offset,
+                  size: size,
+                  maxHeight: maxHeight,
+                  pointerUp: pointerUp,
+                  gap: spotlightGap,
+                  color: arrowColor,
+                ),
               _TooltipCard(
                 fadeAnimation: _fadeAnimation,
                 style: style,
-                step: widget.step,
+                step: step,
                 stepCount: widget.stepCount,
                 stepIndex: widget.stepIndex,
                 offset: offset,
@@ -118,6 +128,8 @@ class _FlowShowcaseOverlayState extends State<FlowShowcaseOverlay>
                 maxWidth: maxWidth,
                 maxHeight: maxHeight,
                 isMobile: isMobile,
+                gap: spotlightGap,
+                tooltipColor: tooltipColor,
                 onNext: widget.onNext,
                 onSkip: widget.onSkip,
                 onStepSelected: widget.onStepSelected,
@@ -134,6 +146,7 @@ class _BackdropLayer extends StatelessWidget {
   const _BackdropLayer({
     required this.fadeAnimation,
     required this.style,
+    required this.step,
     required this.spotlightRect,
     required this.onTap,
     required this.maxWidth,
@@ -142,13 +155,28 @@ class _BackdropLayer extends StatelessWidget {
 
   final Animation<double> fadeAnimation;
   final FlowShowcaseStyle style;
+  final FlowShowcaseStep step;
   final Rect spotlightRect;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final double maxWidth;
   final double maxHeight;
 
   @override
   Widget build(BuildContext context) {
+    final overlayColor = step.resolveOverlayColor(style);
+    final borderRadius = step.resolveSpotlightBorderRadius(style);
+
+    Widget backdrop = ColoredBox(color: overlayColor);
+    if (style.enableBlur && style.blurSigma > 0) {
+      backdrop = BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: style.blurSigma,
+          sigmaY: style.blurSigma,
+        ),
+        child: backdrop,
+      );
+    }
+
     return FadeTransition(
       opacity: fadeAnimation,
       child: SizedBox(
@@ -159,15 +187,9 @@ class _BackdropLayer extends StatelessWidget {
           child: ClipPath(
             clipper: InvertedSpotlightClipper(
               spotlightRect: spotlightRect,
-              borderRadius: style.spotlightBorderRadius,
+              borderRadius: borderRadius,
             ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: style.blurSigma,
-                sigmaY: style.blurSigma,
-              ),
-              child: ColoredBox(color: style.overlayColor),
-            ),
+            child: backdrop,
           ),
         ),
       ),
@@ -184,6 +206,7 @@ class _TooltipPointer extends StatelessWidget {
     required this.size,
     required this.maxHeight,
     required this.pointerUp,
+    required this.gap,
     required this.color,
   });
 
@@ -194,16 +217,15 @@ class _TooltipPointer extends StatelessWidget {
   final Size size;
   final double maxHeight;
   final bool pointerUp;
+  final double gap;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final padding = style.spotlightPadding;
-
     return Positioned(
       left: triangleLeft,
-      top: pointerUp ? offset.dy + size.height + padding : null,
-      bottom: pointerUp ? null : maxHeight - offset.dy + padding,
+      top: pointerUp ? offset.dy + size.height + gap : null,
+      bottom: pointerUp ? null : maxHeight - offset.dy + gap,
       child: FadeTransition(
         opacity: fadeAnimation,
         child: CustomPaint(
@@ -230,6 +252,8 @@ class _TooltipCard extends StatelessWidget {
     required this.maxWidth,
     required this.maxHeight,
     required this.isMobile,
+    required this.gap,
+    required this.tooltipColor,
     required this.onNext,
     required this.onSkip,
     required this.onStepSelected,
@@ -245,6 +269,8 @@ class _TooltipCard extends StatelessWidget {
   final double maxWidth;
   final double maxHeight;
   final bool isMobile;
+  final double gap;
+  final Color tooltipColor;
   final VoidCallback onNext;
   final VoidCallback onSkip;
   final ValueChanged<int> onStepSelected;
@@ -253,17 +279,30 @@ class _TooltipCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
-    final padding = style.spotlightPadding;
     final pointerUp = offset.dy < maxHeight / 2;
     final isLastStep = stepIndex >= stepCount - 1;
+    final showIndicator = stepCount > 1 && style.showStepIndicator;
+    final showSkip = stepCount > 1 && style.showSkipButton;
+    final headerIcon = step.icon ?? style.defaultIcon;
+    final arrowHeight =
+        style.showTooltipArrow ? style.triangleHeight : 0.0;
+    final sectionSpacing = style.tooltipSectionSpacing;
+    final indicatorActiveColor =
+        style.stepIndicatorActiveColor ?? primary;
+    final indicatorInactiveColor = style.stepIndicatorInactiveColor ??
+        primary.withValues(alpha: 0.3);
+    final headerForeground =
+        style.headerIconForegroundColor ?? primary;
+    final headerBackground = style.headerIconBackgroundColor ??
+        primary.withValues(alpha: 0.15);
 
     return Positioned(
       top: pointerUp
-          ? offset.dy + size.height + style.triangleHeight + padding
+          ? offset.dy + size.height + arrowHeight + gap
           : null,
       bottom: pointerUp
           ? null
-          : maxHeight - offset.dy + style.triangleHeight + padding,
+          : maxHeight - offset.dy + arrowHeight + gap,
       left: _left(maxWidth, isMobile),
       right: _right(maxWidth, isMobile),
       child: FadeTransition(
@@ -275,15 +314,10 @@ class _TooltipCard extends StatelessWidget {
               ? maxWidth - style.tooltipMargin.horizontal
               : style.tooltipWidth,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(style.tooltipBorderRadius),
-            color: theme.colorScheme.surface,
-            boxShadow: const [
-              BoxShadow(
-                blurRadius: 24,
-                offset: Offset(0, 8),
-                color: Color(0x26000000),
-              ),
-            ],
+            borderRadius:
+                BorderRadius.circular(style.tooltipBorderRadius),
+            color: tooltipColor,
+            boxShadow: style.resolveTooltipBoxShadow(),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -292,45 +326,63 @@ class _TooltipCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _HeaderIcon(primary: primary),
-                  const SizedBox(width: 16),
+                  if (style.showHeaderIcon) ...[
+                    _HeaderIcon(
+                      icon: headerIcon,
+                      size: style.headerIconSize,
+                      innerSize: style.headerIconInnerSize,
+                      borderRadius: style.headerIconBorderRadius,
+                      backgroundColor: headerBackground,
+                      foregroundColor: headerForeground,
+                    ),
+                    SizedBox(width: sectionSpacing),
+                  ],
                   Expanded(
                     child: Text(
                       step.title ?? style.defaultTitle,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: style.titleTextStyle ??
+                          theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ),
-                  if (stepCount > 1)
+                  if (showSkip)
                     TextButton(
+                      style: style.skipButtonStyle,
                       onPressed: onSkip,
                       child: Text(style.skipButtonLabel),
                     ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: sectionSpacing),
               Text(
                 step.content,
-                style: theme.textTheme.bodyMedium,
+                style: style.contentTextStyle ?? theme.textTheme.bodyMedium,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: sectionSpacing),
               Row(
                 children: [
-                  if (stepCount > 1)
+                  if (showIndicator)
                     Expanded(
                       child: ShowcaseStepIndicator(
                         count: stepCount,
                         activeIndex: stepIndex,
                         onStepSelected: onStepSelected,
-                        activeColor: primary,
-                        inactiveColor: primary.withValues(alpha: 0.3),
+                        activeColor: indicatorActiveColor,
+                        inactiveColor: indicatorInactiveColor,
+                        dotSize: style.stepIndicatorDotSize,
+                        spacing: style.stepIndicatorSpacing,
+                        animationDuration:
+                            style.stepIndicatorAnimationDuration,
                       ),
                     ),
                   ElevatedButton(
+                    style: style.nextButtonStyle,
                     onPressed: onNext,
                     child: Text(
-                      isLastStep ? 'Done' : style.nextButtonLabel,
+                      isLastStep
+                          ? style.doneButtonLabel
+                          : style.nextButtonLabel,
                     ),
                   ),
                 ],
@@ -345,32 +397,54 @@ class _TooltipCard extends StatelessWidget {
   double? _left(double maxWidth, bool isMobile) {
     if (isMobile) return 0;
     if (offset.dx >= maxWidth / 2) return null;
-    return max(6, offset.dx);
+    return max(style.tooltipPositionInset, offset.dx);
   }
 
   double? _right(double maxWidth, bool isMobile) {
     if (isMobile) return 0;
     if (offset.dx < maxWidth / 2) return null;
-    return max(maxWidth - (offset.dx + size.width), 6);
+    return max(
+      maxWidth - (offset.dx + size.width),
+      style.tooltipPositionInset,
+    );
   }
 }
 
 class _HeaderIcon extends StatelessWidget {
-  const _HeaderIcon({required this.primary});
+  const _HeaderIcon({
+    required this.size,
+    required this.innerSize,
+    required this.borderRadius,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    this.icon,
+  });
 
-  final Color primary;
+  final Widget? icon;
+  final double size;
+  final double innerSize;
+  final double borderRadius;
+  final Color backgroundColor;
+  final Color foregroundColor;
 
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: primary.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(100),
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(borderRadius),
       ),
       child: SizedBox(
-        width: 30,
-        height: 30,
-        child: Icon(Icons.touch_app, size: 20, color: primary),
+        width: size,
+        height: size,
+        child: Center(
+          child: icon ??
+              Icon(
+                Icons.touch_app,
+                size: innerSize,
+                color: foregroundColor,
+              ),
+        ),
       ),
     );
   }

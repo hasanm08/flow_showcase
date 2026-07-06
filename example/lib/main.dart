@@ -60,7 +60,9 @@ class _DashboardPageState extends State<DashboardPage> {
       },
       style: const FlowShowcaseStyle(
         nextButtonLabel: 'Continue',
+        doneButtonLabel: 'Got it',
         fadeDuration: Duration(milliseconds: 280),
+        showStepIndicator: true,
       ),
     );
   }
@@ -75,6 +77,7 @@ class _DashboardPageState extends State<DashboardPage> {
             id: 'app_help',
             title: 'Replay Tour',
             content: 'Open this menu anytime to restart the guided tour.',
+            icon: const Icon(Icons.help_outline, size: 20),
             child: IconButton(
               tooltip: 'Help',
               onPressed: _startShowcase,
@@ -96,6 +99,7 @@ class _DashboardPageState extends State<DashboardPage> {
         title: 'Create Something New',
         content:
             'Start a draft, upload media, or share an update with one tap.',
+        icon: const Icon(Icons.add, size: 20),
         child: FloatingActionButton.extended(
           onPressed: () {},
           icon: const Icon(Icons.add),
@@ -226,6 +230,7 @@ class _ShowcaseDestination extends StatelessWidget {
       id: id,
       title: title,
       content: content,
+      icon: icon,
       child: NavigationDestination(
         icon: icon,
         selectedIcon: selectedIcon,
