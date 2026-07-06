@@ -68,7 +68,6 @@ jobs:
         id: version
         run: echo "version=$(awk '/^version:/{print $2}' pubspec.yaml)" >> "$GITHUB_OUTPUT"
 
-      - name: Skip if version already published
         id: check
         run: |
           status=$(curl -s -o /dev/null -w "%{http_code}" \
